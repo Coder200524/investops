@@ -18,4 +18,7 @@ public interface TradeRecordRepository extends JpaRepository<TradeRecord, UUID>,
     Optional<TradeRecord> findBySourceSystemAndExternalTradeId(SourceSystem sourceSystem, String externalTradeId);
 
     List<TradeRecord> findByImportBatchId(UUID importBatchId);
+
+    List<TradeRecord> findBySourceSystemAndTradeDateBetween(
+            SourceSystem sourceSystem, java.time.LocalDate tradeDateFrom, java.time.LocalDate tradeDateTo);
 }

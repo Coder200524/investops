@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/health/**").permitAll()
                 .requestMatchers("/api/v1/trades/**").permitAll()
+                .requestMatchers("/api/v1/reconciliation/**").permitAll()
                 .anyRequest().authenticated()
             );
 
