@@ -66,6 +66,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(errorResponse));
     }
 
+    @ExceptionHandler({ConflictException.class, org.springframework.orm.ObjectOptimisticLockingFailureException.class})
+    public ResponseEntity<ApiResponse<Void>> handleConflictException(
+            Exception ex, HttpServletRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .type("https://investops.example.com/errors/conflict")
+                .title("Conflict")
+                .status(HttpStatus.CONFLICT.value())
+                .detail(ex.getMessage())
+                .instance(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(errorResponse));
+    }
+
     @ExceptionHandler(BusinessValidationException.class)
     public ResponseEntity<ApiResponse<Void>> handleBusinessValidationException(
             BusinessValidationException ex, HttpServletRequest request) {
@@ -94,6 +109,36 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(errorResponse));
+    }
+
+    @ExceptionHandler({org.springframework.security.authentication.BadCredentialsException.class, org.springframework.security.core.AuthenticationException.class})
+    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(
+            Exception ex, HttpServletRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .type("https://investops.example.com/errors/unauthorized")
+                .title("Unauthorized")
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .detail(ex.getMessage() != null ? ex.getMessage() : "Authentication failed")
+                .instance(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(errorResponse));
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(
+            org.springframework.security.access.AccessDeniedException ex, HttpServletRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .type("https://investops.example.com/errors/forbidden")
+                .title("Forbidden")
+                .status(HttpStatus.FORBIDDEN.value())
+                .detail(ex.getMessage() != null ? ex.getMessage() : "Access denied")
+                .instance(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error(errorResponse));
     }
 
     @ExceptionHandler(Exception.class)

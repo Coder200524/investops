@@ -3,6 +3,7 @@ package com.investops.reconciliation.service;
 import com.investops.common.dto.PagedResponse;
 import com.investops.common.exception.BusinessValidationException;
 import com.investops.common.exception.ResourceNotFoundException;
+import com.investops.exceptionmgmt.service.ExceptionService;
 import com.investops.reconciliation.dto.ReconciliationRequest;
 import com.investops.reconciliation.dto.ReconciliationResultDto;
 import com.investops.reconciliation.dto.ReconciliationRunDto;
@@ -38,6 +39,7 @@ public class ReconciliationService {
     private final ReconciliationResultRepository resultRepository;
     private final TradeRecordRepository tradeRecordRepository;
     private final MatchingEngine matchingEngine;
+    private final ExceptionService exceptionService;
     private final PlatformTransactionManager transactionManager;
 
     /**
@@ -128,7 +130,10 @@ public class ReconciliationService {
                         run, tradesA, tradesB, run.getPriceTolerance());
 
                 // Batch persist results
-                resultRepository.saveAll(results);
+                List<ReconciliationResult> savedResults = resultRepository.saveAll(results);
+
+                // Convert eligible reconciliation results (breaks, missing, duplicate trades) into exceptions
+                exceptionService.createExceptionsForResults(savedResults);
 
                 // Compute counts
                 int totalCompared = results.size();

@@ -60,15 +60,21 @@ class ReconciliationControllerIntegrationTest {
     @Autowired
     private ReconciliationService reconciliationService;
 
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
     private ImportBatch batchA;
     private ImportBatch batchB;
 
     @BeforeEach
     void setUp() {
-        resultRepository.deleteAll();
-        runRepository.deleteAll();
-        tradeRecordRepository.deleteAll();
-        importBatchRepository.deleteAll();
+        jdbcTemplate.execute("DELETE FROM exception_audit_log");
+        jdbcTemplate.execute("DELETE FROM exception_comment");
+        jdbcTemplate.execute("DELETE FROM trade_exception");
+        jdbcTemplate.execute("DELETE FROM reconciliation_result");
+        jdbcTemplate.execute("DELETE FROM reconciliation_run");
+        jdbcTemplate.execute("DELETE FROM trade_record");
+        jdbcTemplate.execute("DELETE FROM import_batch");
 
         batchA = importBatchRepository.save(ImportBatch.builder()
                 .filename("trades_a.csv")
