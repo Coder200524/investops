@@ -19,12 +19,16 @@ import java.util.stream.Collectors;
  * Targets O(n + m) time complexity using hash-indexed candidate sets.
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class MatchingEngine {
 
     private final List<ComparisonRule> comparisonRules;
     private final ObjectMapper objectMapper;
+
+    public MatchingEngine(List<ComparisonRule> comparisonRules, ObjectMapper objectMapper) {
+        this.comparisonRules = comparisonRules;
+        this.objectMapper = objectMapper;
+    }
 
     /**
      * Executes deterministic two-pass reconciliation on trades from Source A and Source B.
